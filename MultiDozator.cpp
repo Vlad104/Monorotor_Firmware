@@ -1,9 +1,7 @@
-#include "MultiDozator.h"ъ
+#include "MultiDozator.h"
 #include <cmath>
 
 MultiDozator::MultiDozator() :
-	volume_(0), feedrate_(0), accel_(0), reverse_(0),
-	gear_A_(1), gear_B_(1), ratio_A_(0), ratio_B_(0), dir_(true)
 {
 	dozator_A_ = new Dozator(STEP_A, DIR_A);
 	dozator_B_ = new Dozator(STEP_B, DIR_B);
@@ -12,42 +10,6 @@ MultiDozator::MultiDozator() :
 MultiDozator::~MultiDozator() {
 	delete dozator_A_;
 	delete dozator_B_;
-}
-
-void MultiDozator::volume(int32_t volume) {
-	volume_ = volume;
-}
-
-void MultiDozator::set_feedrate(uint32_t feedrate) {
-	feedrate_ = feedrate;
-}
-
-void MultiDozator::set_accel(float accel) {
-	accel_ = accel;
-}
-
-void MultiDozator::set_reverse(uint32_t reverse) {
-	reverse_ = reverse;
-}
-
-void MultiDozator::set_gear(float gear_A) {
-	gear_A_ = gear_A;
-}
-
-void MultiDozator::set_gear(float gear_B) {
-	gear_B_ = gear_B;
-}
-
-void MultiDozator::set_ratio(float ratio_A) {
-	ratio_A_ = ratio_A;
-}
-
-void MultiDozator::set_ratio(float ratio_B) {
-	ratio_B_ = ratio_B;
-}
-
-void MultiDozator::set_dir(bool dir) {
-	dir_ = dir;
 }
 
 void MultiDozator::claculate() {
@@ -77,17 +39,30 @@ void MultiDozator::claculate() {
 	float accel_A = f_accel * gear_A_ * ratio_A_ / (round_accuracy_A * 60);
 	float accel_B = f_accel * gear_B_ * ratio_B_ / (round_accuracy_B * 60);
 
-	init_dozator(/*  */);
-	init_dozator(/*  */);
+	init_dozator(dozator_A_, volume_A, feedrate_A, reverse_A, accel_A, gear_A_, ratio_A_);
+	init_dozator(dozator_B_, volume_B, feedrate_B, reverse_B, accel_B, gear_B_, ratio_B_);
 }
 
 void MultiDozator::init_dozator(Dozator* dozator, int32_t volume, uint32_t feedrate,
-						float accel, int32_t reverse, float gear, float ratio) {
-
+						float accel, int32_t reverse, float gear, float ratio) 
+{
+	dozator->set_volume(volume);
+	dozator->set_feedrate(volume);
+	dozator->set_accel(volume);
+	dozator->set_reverse(volume);
+	dozator->set_gear(volume);
+	dozator->set_ratio(volume);
 }
 
 void MultiDozator::start() {
 	claculate();
 	dozator_A_->start_movable();
-	dozator_A_->stop_movable();
+	dozator_B_->start_movable();
+}
+
+void MultiDozator::run() {
+	while (1) {
+		dozator_A_->run();
+		dozator_B_->run();
+	}
 }
