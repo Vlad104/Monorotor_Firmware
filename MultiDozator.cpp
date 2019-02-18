@@ -1,57 +1,50 @@
 #include "MultiDozator.h"
-#include <cmath>
 
 MultiDozator::MultiDozator() :
 {
-	dozator_A_ = new Dozator(STEP_A, DIR_A);
-	dozator_B_ = new Dozator(STEP_B, DIR_B);
+	dozators_[0] = new Dozator(STEP_A, DIR_A);
+	dozators_[1] = new Dozator(STEP_B, DIR_B);
+}
+
+MultiDozator::MultiDozator(const DataModel& data) :
+{
+	dozators_[0] = new Dozator(STEP_A, DIR_A);
+	dozators_[1] = new Dozator(STEP_B, DIR_B);
+	data_ = data;
 }
 
 MultiDozator::~MultiDozator() {
-	delete dozator_A_;
-	delete dozator_B_;
+	delete dozators_[0];
+	delete dozators_[1];
+}
+
+void MultiDozator::set_data(const DataModel& data) {
+	data_ = data;
 }
 
 void MultiDozator::claculate() {
-	float f_volume = volume_;
-	float f_feedrate = feedrate_;
-	float f_accel = accel_;
-	float f_reverse = reverse_;
+	float 
 
-	float f_volume_A = f_volume * gear_A_ * ratio_A_;
-	float f_volume_B = f_volume * gear_B_ * ratio_B_;
+	float volume_A = data_.volume * data_.ratio_A;
+	float volume_B = data_.volume * data_.ratio_B;
 
-	float round_f_volume_A = roundf(f_volume_A);
-	float round_f_volume_B = roundf(f_volume_B);
+	float feedrate_A = data_.feedrate * data_.ratio_A / 60;
+	float feedrate_B = data_.feedrate * data_.ratio_B / 60;
 
-	int32_t volume_A = (int32_t) round_f_volume_A;
-	int32_t volume_B = (int32_t) round_f_volume_B;
+	float accel_A = data_.accel * data_.ratio_A / 60;
+	float accel_B = data_.accel * data_.ratio_B / 60;
 
-	uint32_t reverse_A = (uint32_t) (f_reverse * gear_A_ * ratio_A_);
-	uint32_t reverse_B = (uint32_t) (f_reverse * gear_B_ * ratio_B_);
-
-	float round_accuracy_A = round_f_volume_A / f_volume_A;
-	float round_accuracy_B = round_f_volume_B / f_volume_B;
-
-	float feedrate_A = f_feedrate * gear_A_ * ratio_A_ / (round_accuracy_A * 60);
-	float feedrate_B = f_feedrate * gear_B_ * ratio_B_ / (round_accuracy_B * 60);
-
-	float accel_A = f_accel * gear_A_ * ratio_A_ / (round_accuracy_A * 60);
-	float accel_B = f_accel * gear_B_ * ratio_B_ / (round_accuracy_B * 60);
-
-	init_dozator(dozator_A_, volume_A, feedrate_A, reverse_A, accel_A, gear_A_, ratio_A_);
-	init_dozator(dozator_B_, volume_B, feedrate_B, reverse_B, accel_B, gear_B_, ratio_B_);
+	init_dozator(dozators[0], volume_A, feedrate_A, accel_A, data_.gear_A);
+	init_dozator(dozators[1], volume_A, feedrate_B, accel_B, data_.gear_B);
 }
 
-void MultiDozator::init_dozator(Dozator* dozator, int32_t volume, uint32_t feedrate,
-						float accel, int32_t reverse, float gear, float ratio) 
+void MultiDozator::init_dozator(Dozator* dozator, float volume, float feedrate,
+								float accel, float gear) 
 {
+	dozator->set_gear(volume);		//  set gear first
 	dozator->set_volume(volume);
 	dozator->set_feedrate(volume);
 	dozator->set_accel(volume);
-	dozator->set_reverse(volume);
-	dozator->set_gear(volume);
-	dozator->set_ratio(volume);
 }
 
 void MultiDozator::start() {

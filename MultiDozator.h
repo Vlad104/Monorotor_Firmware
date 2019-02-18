@@ -8,8 +8,10 @@
 class MultiDozator {
 public:
 	MultiDozator();
-	//MultiDozator(const DataModel& data);
+	MultiDozator(const DataModel& data);
 	~MultiDozator();
+
+	void set_data(const DataModel& data);
 
 	void calculate();
 
@@ -19,14 +21,11 @@ public:
 	void run();
 
 private:
-	DataModel data_;
+	DataModel	data_;
+	Dozator*	dozators_[2];
 
-	Dozator* dozator_A_;
-	Dozator* dozator_B_;
-
-	void init_dozator(Dozator* dozator, int32_t volume, uint32_t feedrate,
-						float accel, int32_t reverse, float gear, float ratio);
-}
-
+	void init_dozator(Dozator* dozator, float volume, float feedrate,
+								float accel, float gear, float ratio);
+};
 
 #endif // MULTI_DOZATOR_H

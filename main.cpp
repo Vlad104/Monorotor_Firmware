@@ -5,6 +5,7 @@
 #include <math.h>
 
 //#define TEST 1
+#define STOP_CALL
 
 #define STEP_A  PC_0
 #define STEP_B  PC_2
@@ -147,6 +148,9 @@ int main()
                 enb = 0;
                 //
                 //printf("Stop\r\n");
+                #ifdef STOP_CALL
+                usb.putc('!');
+                #endif
                 //
                 continue;
             }                                              
@@ -259,6 +263,10 @@ void SerialEvent(Serial& port)
         if (!error) {
             FlashSave();
             Calculate();
+            #ifdef STOP_CALL
+            usb.putc('!');
+            return;
+            #endif
         }
     }
     else if (message_type == 'P') {

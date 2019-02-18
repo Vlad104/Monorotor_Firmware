@@ -16,40 +16,30 @@ Dozator::~Dozator() {
 	delete stepper_;
 }
 
-void Dozator::volume(uint32_t volume) {
-	volume_ = volume;
-}
-
-void Dozator::set_feedrate(uint32_t feedrate) {
-	feedrate_ = feedrate;
-}
-
-void Dozator::set_accel(uint32_t accel) {
-	accel_ = accel;
-}
-
-void Dozator::set_reverse(uint32_t reverse) {
-	reverse_ = reverse;
-}
-
 void Dozator::set_gear(uint32_t gear) {
 	gear_ = gear;
 }
 
-void Dozator::set_ratio(uint32_t ratio) {
-	ratio_ = ratio;
+void Dozator::volume(float volume) {
+	float temp = volume * gear_;
+	volume_ = ((int32_t) temp) + 1;		// + 1 is rounds
 }
 
-void Dozator::set_dir(bool dir) {
-	dir_ = dir;
+void Dozator::set_feedrate(uint32_t feedrate) {
+	float temp = feedrate * gear_;
+	feedrate_ = ((int32_t) temp) + 1;	// + 1 is rounds
+}
+
+void Dozator::set_accel(uint32_t accel) {
+	float temp = accel * gear_;
+	accel_ = ((int32_t) temp) + 1;		// + 1 is rounds
 }
 
 void Dozator::start_movement() {
-	int32_t volume = (dir_) ? volume_ : -1*volume_;
 	stepper_->setCurrentPosition(0);
-    stepper_->setAcceleration(/*uint32_t*/);  
-    stepper_->move(/*int32_t*/);
-    stepper_->setMaxSpeed(/*uint32_t*/);
+    stepper_->setAcceleration(accel_);  
+    stepper_->move(volume_);
+    stepper_->setMaxSpeed(feedrate_);
 }
 
 void Dozator::stop_movement() {

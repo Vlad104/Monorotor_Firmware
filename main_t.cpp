@@ -1,13 +1,20 @@
 #include "mbed.h"
+#include "params.h"
 //#include "AccelStepper.h"
 //#include <FlashIAP.h>
 //#include <stdlib.h>
-//#include <math.h>
 
-Timer t;
+DataModel		data;
+MultiDozator	dozators;
+Receiver		com_port;
+
+Timer			t;
+
 
 int main() {
-	t.start();
-	//Flasher
-	//Multimotor
+
+	dozators.set_data(data);
+
+	dozators.run();	
+
 }
