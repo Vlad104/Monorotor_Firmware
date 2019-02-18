@@ -18,9 +18,13 @@ Dozator::~Dozator() {
 
 void Dozator::set_gear(uint32_t gear) {
 	gear_ = gear;
+	
+	set_volume(volume_);
+	set_feedrate(feedrate_);
+	set_accel(accel_);
 }
 
-void Dozator::volume(float volume) {
+void Dozator::set_volume(float volume) {
 	float temp = volume * gear_;
 	volume_ = ((int32_t) temp) + 1;		// + 1 is rounds
 }
@@ -45,4 +49,11 @@ void Dozator::start_movement() {
 void Dozator::stop_movement() {
 	stepper_->setCurrentPosition(0); 
     stepper_->move(0);
+}
+
+void Dozator::continues_movable() {
+	stepper_->setCurrentPosition(0);
+    stepper_->setAcceleration(accel_);  
+    stepper_->move(1000000000);
+    stepper_->setMaxSpeed(feedrate_);	
 }

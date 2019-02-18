@@ -1,5 +1,4 @@
 #include "DataModel.h"
-///#include <cmath>
 
 DataModel::DataModel() :
 	volume_(0.0), feedrate_(0.0), accel_(0.0),

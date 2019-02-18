@@ -98,11 +98,20 @@ INCLUDE_DIRECTORIES(
   mbed/TARGET_NUCLEO_F446RE/TOOLCHAIN_GCC_ARM
   mbed
   /AccelStepper
-  
+  /src
   )
 
 # executable Monorotor_Firmware_DC021
 ADD_EXECUTABLE(Monorotor_Firmware_DC021
+  src/params.h
+  src/Controller.cpp
+  src/Controller.h
+  src/DataModel.cpp
+  src/DataModel.h
+  src/Dozator.cpp
+  src/Dozator.h
+  src/MultiDozator.cpp
+  src/MultiDozator.h
   AccelStepper/AccelStepper.cpp
   AccelStepper/AccelStepper.h
   main.cpp

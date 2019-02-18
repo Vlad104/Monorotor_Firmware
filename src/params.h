@@ -1,6 +1,8 @@
 #ifndef PARAMS_H
 #define PARAMS_H
 
+#include "mbed.h"
+
 // PINS 
 #define STEP_A  PC_0
 #define STEP_B  PC_2
@@ -16,11 +18,6 @@
 
 // UART
 #define UART_BAUDRATE 19200
-//??
-#define PARAMS_SIZE 14
-#define WASH_SIZE   11
-#define START_SIZE  2
-#define SENT_SIZE   4
 
 // FLASH
 #define FLASH_START_ADR  0x0800FC00

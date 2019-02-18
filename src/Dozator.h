@@ -2,6 +2,7 @@
 #define DOZATOR_H
 
 #include "params.h"
+#include "AccelStepper.h"
 
 class Dozator : public AccelStepper {
 public:
@@ -15,6 +16,7 @@ public:
 
 	void start_movement();
 	void stop_movement();
+	void continues_movable();
 
 private:
 	int step_pin_;
