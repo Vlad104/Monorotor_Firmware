@@ -4,7 +4,7 @@
 #include "params.h"
 #include "AccelStepper.h"
 
-class Dozator : public AccelStepper {
+class Dozator {
 public:
 	Dozator(int step_pin, int dir_pin);
 	~Dozator();
@@ -16,7 +16,8 @@ public:
 
 	void start_movement();
 	void stop_movement();
-	void continues_movable();
+	void continues_movement();
+	void run();
 
 private:
 	int step_pin_;
