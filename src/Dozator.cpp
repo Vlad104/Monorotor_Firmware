@@ -1,11 +1,11 @@
 #include "Dozator.h"
 
-Dozator::Dozator(int step_pin, int dir_pin) :
+Dozator::Dozator(PinName step_pin, PinName dir_pin) :
     step_pin_(step_pin), dir_pin_(dir_pin),
     gear_(0), volume_(0), feedrate_(0), accel_(0)
 {
-    //stepper_ = new AccelStepper(1, step_pin, dir_pin);    // PinName
-    stepper_ = new AccelStepper(1, STEP_A, DIR_A);
+    stepper_ = new AccelStepper(1, step_pin, dir_pin);    // PinName
+    //stepper_ = new AccelStepper(1, STEP_A, DIR_A);
     stepper_->setMinPulseWidth(PULSE_WIDTH);
     stepper_->setMaxSpeed(MOTOR_MAX_SPEED); 
     stepper_->setCurrentPosition(0);
@@ -60,4 +60,8 @@ void Dozator::continues_movement() {
 
 void Dozator::run() {
     stepper_->run();
+}
+
+bool Dozator::stopped() {
+	return stepper_->distanceToGo() == 0;
 }

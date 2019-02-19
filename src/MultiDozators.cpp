@@ -4,12 +4,14 @@ MultiDozator::MultiDozator()
 {
     dozators_[0] = new Dozator(STEP_A, DIR_A);
     dozators_[1] = new Dozator(STEP_B, DIR_B);
+    is_run_ = false;
 }
 
 MultiDozator::MultiDozator(const DataModel& data)
 {
     dozators_[0] = new Dozator(STEP_A, DIR_A);
     dozators_[1] = new Dozator(STEP_B, DIR_B);
+    is_run_ = false;
     data_ = data;
 }
 
@@ -68,23 +70,29 @@ void MultiDozator::set_dozator_gear(int num, float gear) {
 }
 
 void MultiDozator::start() {
-    dozators_[0]->start_movable();
-    dozators_[1]->start_movable();
+    dozators_[0]->start_movement();
+    dozators_[1]->start_movement();
+    is_run_ = true;
 }
 
 void MultiDozator::stop() {
-    dozators_[0]->stop_movable();
-    dozators_[1]->stop_movable();
+    dozators_[0]->stop_movement();
+    dozators_[1]->stop_movement();
+    is_run_ = true;
 }
 
 void MultiDozator::continues_start() {
-    dozators_[0]->continues_movable();
-    dozators_[1]->continues_movable();
+    dozators_[0]->continues_movement();
+    dozators_[1]->continues_movement();
+    is_run_ = true;
 }
 
-void MultiDozator::run() {
-    while (1) {
-		dozators_[0]->run();
-		dozators_[1]->run();
-    }
+void MultiDozator::run(bool& is_run, bool& was_stopped) {
+	dozators_[0]->run();
+	dozators_[1]->run();
+
+	if (is_run_ && dozators_[0]->stopped() && dozators_[1]->stopped()) {
+		is_run_ = false;
+		was_stopped = true;
+	}
 }

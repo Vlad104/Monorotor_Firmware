@@ -3,6 +3,8 @@
 
 #include "mbed.h"
 
+#define TEST
+
 // PINS 
 #define STEP_A  PC_0
 #define STEP_B  PC_2
@@ -18,6 +20,7 @@
 
 // UART
 #define UART_BAUDRATE 19200
+#define MESSAGE_MAX_SIZE 20;
 
 // FLASH
 #define FLASH_START_ADR  0x0800FC00
@@ -27,6 +30,5 @@
 // STEPPER
 #define MOTOR_MAX_SPEED  50000
 #define PULSE_WIDTH      10
-
 
 #endif // PARAMS_H

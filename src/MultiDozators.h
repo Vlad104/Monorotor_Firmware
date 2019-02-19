@@ -22,11 +22,12 @@ public:
 	void start();
 	void stop();
 	void continues_start();
-	void run();
+	void run(bool& was_stopped);
 
 private:
 	DataModel	data_;
 	Dozator*	dozators_[2];
+	bool		is_run_;
 };
 
 #endif // MULTI_DOZATOR_H

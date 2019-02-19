@@ -3,6 +3,7 @@
 
 #include "../mbed.h"
 #include <string>
+#include <cstdlib>
 
 #include "params.h"
 #include "DataModel.h"
@@ -18,16 +19,21 @@ public:
 private:
 	Serial* 		rs485_;
 	Serial* 		usb_; 
+	Serial*			last_port_;
 	DigitalOut*		transmit_enable_;
 
 	DataModel		data_;
 	MultiDozator	dozators_;
 
-	static void rs485_event();
-	static void usb_event();
+	void rs485_event();
+	void usb_event();
 	void serial_event(Serial* port);
+	void read_command(Serial* port);
+	void read_params(Serial* port);
 	void make_command(char command);
 	void make_params(char message_type, const std::string& str_buffer);
+	float str_to_float(const std::string& str_buffer);
+	void send_answer(Serial* port, char answer);
 
 };
 

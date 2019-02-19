@@ -3,10 +3,11 @@
 
 #include "params.h"
 #include "AccelStepper.h"
+#include "mbed.h"
 
 class Dozator {
 public:
-	Dozator(int step_pin, int dir_pin);
+	Dozator(PinName step_pin, PinName dir_pin);
 	~Dozator();
 
 	void set_gear(float gear);			// gear sets firstly
@@ -18,6 +19,7 @@ public:
 	void stop_movement();
 	void continues_movement();
 	void run();
+	bool stopped();
 
 private:
 	int step_pin_;

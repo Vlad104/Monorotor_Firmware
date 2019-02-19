@@ -3,6 +3,7 @@
 Controller::Controller() {
     rs485_ = new Serial(UART_TX, UART_RX);
     usb_ = new Serial(USB_TX, USB_RX);
+    last_port_ = usb_;
 
     rs485_->baud(UART_BAUDRATE);
     usb_->baud(UART_BAUDRATE);
@@ -12,6 +13,11 @@ Controller::Controller() {
 
     transmit_enable_ = new DigitalOut(UART_EN);
     transmit_enable_->write(0);
+    is_run_ = false;
+
+    #ifdef TEST
+		//usb_->printf("Monorotor Firmware 3\r\n");
+	#endif
 }
 
 Controller::~Controller() {
@@ -29,33 +35,61 @@ void Controller::usb_event() {
 }
 
 void Controller::serial_event(Serial* port) {
+	last_port_ = port;
     char message_type = port->getc();
 
-    if (message_type >= '0' && message_type <= '2') {
-        char temp = port->getc();
-        make_command(temp);
-        return;
-    } 
+	if (message_type == '=') {
+		read_command(port);
+	} else if (message_type == '@') {
+		read_params(port);
+	} else {
+		send_answer(port, '?');
+	}
+}
 
-    std::string buffer = "";
-    char temp = port->getc();
+void Controller::read_command(Serial* port) {
+	char temp = port->getc();
+	make_command(temp);
+}
 
-    while(temp != '|') {
-        buffer += temp;
-        temp = port->getc();
-    }
-    make_params(message_type, buffer);
+void Controller::read_params(Serial* port) {
+	char params_type = port->getc();
+	std::string buffer = "";
+	char temp = port->getc();
+
+	while(temp != '*') {
+		buffer += temp;
+		temp = port->getc();
+	}
+
+	#ifdef TEST
+		usb_->printf("command: %c: %s\r\n", params_type, buffer.c_str());
+	#endif
+	make_params(params_type, buffer);
+	send_answer(port, '!');
 }
 
 void Controller::make_command(char command) {
+	#ifdef TEST
+		usb_->printf("command: %c\r\n", command);
+	#endif
     switch (command) {
         case '0':
+        	#ifdef TEST
+				usb_->printf("stop\r\n");
+			#endif
             dozators_.stop();
             break;
         case '1':
+        	#ifdef TEST
+				usb_->printf("start\r\n");
+			#endif
             dozators_.start();
             break;
         case '2':
+        	#ifdef TEST
+				usb_->printf("continues\r\n");
+			#endif
             dozators_.continues_start();
             break;
         default:
@@ -63,43 +97,59 @@ void Controller::make_command(char command) {
     }
 }
 
-void Controller::make_params(char message_type, const std::string& str_buffer) {
-    switch (message_type) {
-        case 'V':
-            //float volume = std::stof(str_buffer);
-            float volume = 1.0;            
-            dozators_.calculate_volume(volume);
-            break;
-        case 'F':
-            //float feedrate = std::stof(str_buffer);
-            float feedrate = 1.0;
-            dozators_.calculate_feedrate(feedrate);
-            break;
-        case 'A':
-            //float accel = std::stof(str_buffer);
-            float accel = 1.0;
-            dozators_.calculate_accel(accel);
-            break;
-        case 'a':
-            //float gear_A = std::stof(str_buffer);
-            float gear_A = 1.0;
-            dozators_.set_dozator_gear(0, gear_A);
-            break;
-        case 'b':
-            //float gear_B = std::stof(str_buffer);
-            float gear_B = 1.0;
-            dozators_.set_dozator_gear(1, gear_B);
-            break;
-        case 'r':
-            //float ratio_A = std::stof(str_buffer);
-            float ratio_A = 1.0;
-            dozators_.calculate_all(ratio_A);
-            break;
-        default:
-            break;
-    }
+void Controller::make_params(char params_type, const std::string& str_buffer) {
+	float value = str_to_float(str_buffer);
+	#ifdef TEST
+		usb_->printf("params value: %c: %f\r\n", params_type, value);
+	#endif
+	switch (params_type) {
+		case 'V':     
+			dozators_.calculate_volume(value);
+			break;
+		case 'F':
+			dozators_.calculate_feedrate(value);
+			break;
+		case 'A':
+			dozators_.calculate_accel(value);
+			break;
+		case 'a':
+			dozators_.set_dozator_gear(0, value);
+			break;
+		case 'b':
+			dozators_.set_dozator_gear(1, value);
+			break;
+		case 'r':
+			dozators_.calculate_all(value);
+			break;
+		default:
+	        break;
+	}
 }
 
+float Controller::str_to_float(const std::string& str_buffer) {
+	if (str_buffer.size() == 0) {
+		return 0.0;
+	}
+	const char* char_buffer = str_buffer.c_str();
+	float value = atof(char_buffer);
+	return value;
+}
+
+
 void Controller::loop() {
-    dozators_.run();
+	bool was_stopped = false;
+	while (1) {
+		dozators_.run(was_stopped);
+
+		if (was_stopped) {
+			was_stopped = false;
+			send_answer(last_port_, '!');
+		}
+	}
+}
+
+void Controller::send_answer(Serial* port, char answer) {
+	transmit_enable_->write(1);
+	port->putc(answer);
+	transmit_enable_->write(0);
 }
