@@ -3,7 +3,7 @@
 
 #include "mbed.h"
 
-#define TEST
+//#define TEST
 
 // PINS 
 #define STEP_A  PC_0
@@ -20,7 +20,7 @@
 
 // UART
 #define UART_BAUDRATE 19200
-#define MESSAGE_MAX_SIZE 20;
+#define MESSAGE_MAX_SIZE 20
 
 // FLASH
 #define FLASH_START_ADR  0x0800FC00
