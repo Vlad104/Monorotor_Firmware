@@ -17,6 +17,7 @@ Controller::Controller() {
     #ifdef TEST
         usb_->printf("Monorotor Firmware 3\r\n");
     #endif
+    //usb_->printf("!");
 }
 
 Controller::~Controller() {
@@ -51,6 +52,7 @@ void Controller::read_command(Serial* port) {
     make_command(temp);
 }
 
+/*
 void Controller::read_params(Serial* port) {
     char params_type = port->getc();
     std::string buffer = "";
@@ -65,6 +67,38 @@ void Controller::read_params(Serial* port) {
         usb_->printf("command: %c: %s\r\n", params_type, buffer.c_str());
     #endif
     make_params(params_type, buffer);
+    send_answer(port, '!');
+}
+*/
+
+void Controller::read_params(Serial* port) {
+    char params_type = port->getc();
+    char temp = port->getc();
+
+    char buffer_1[STR_SIZE];
+    char buffer_2[STR_SIZE];
+
+    int size = 0;
+    while (temp != '*' && size < STR_SIZE) {
+        buffer_1[size] = temp;
+        temp = port->getc();
+        size++;
+    }
+
+    int ofset = STR_SIZE - size;
+    for (int i = 0; i < ofset; i++) {
+        buffer_2[i] = '0';
+    }
+
+    for (int i = 0; i < size; i++) {
+        buffer_2[ofset + i] = buffer_1[i];
+    }
+
+    #ifdef TEST
+        usb_->printf("command: %c: %s\r\n", params_type, buffer_1);
+        usb_->printf("command: %c: %s\r\n", params_type, buffer_2);
+    #endif
+    make_params(params_type, buffer_2);
     send_answer(port, '!');
 }
 
@@ -98,6 +132,40 @@ void Controller::make_command(char command) {
     }
 }
 
+
+void Controller::make_params(char params_type, const char str_buffer[STR_SIZE]) {
+    float value = str_to_float(str_buffer);
+    #ifdef TEST
+        usb_->printf("params value: %c: %f\r\n", params_type, value);
+    #endif
+    switch (params_type) {
+        case 'D':     
+            dozators_.set_dozator(str_buffer[0]);
+            break;
+        case 'V':     
+            dozators_.calculate_volume(value);
+            break;
+        case 'F':
+            dozators_.calculate_feedrate(value);
+            break;
+        case 'A':
+            dozators_.calculate_accel(value);
+            break;
+        case 'a':
+            dozators_.calculate_gear(value, -1);
+            break;
+        case 'b':
+            dozators_.calculate_gear(-1, value);
+            break;
+        case 'r':
+            dozators_.calculate_ratio(value);
+            break;
+        default:
+            break;
+    }
+}
+
+/*
 void Controller::make_params(char params_type, const std::string& str_buffer) {
     float value = str_to_float(str_buffer);
     #ifdef TEST
@@ -117,19 +185,21 @@ void Controller::make_params(char params_type, const std::string& str_buffer) {
             dozators_.calculate_accel(value);
             break;
         case 'a':
-            dozators_.set_dozator_gear(0, value);
+            dozators_.calculate_gear(value, -1);
             break;
         case 'b':
-            dozators_.set_dozator_gear(1, value);
+            dozators_.calculate_gear(-1, value);
             break;
         case 'r':
-            dozators_.calculate_all(value);
+            dozators_.calculate_ratio(value);
             break;
         default:
             break;
     }
 }
+*/
 
+/*
 float Controller::str_to_float(const std::string& str_buffer) {
     if (str_buffer.size() == 0) {
         return 0.0;
@@ -138,7 +208,12 @@ float Controller::str_to_float(const std::string& str_buffer) {
     float value = atof(char_buffer);
     return value;
 }
+*/
 
+float Controller::str_to_float(const char str_buffer[STR_SIZE]) {
+    float value = atof(str_buffer);
+    return value;
+}
 
 void Controller::loop() {
     bool was_stopped = false;
