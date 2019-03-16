@@ -25,8 +25,8 @@ void MultiDozator::calculate_volume(float volume) {
 void MultiDozator::calculate_feedrate(float feedrate) {
     data_.feedrate = feedrate;
 
-    float feedrate_A = data_.feedrate * data_.ratio_A * data_.gear_A / 60;
-    float feedrate_B = data_.feedrate * data_.ratio_B * data_.gear_B / 60;
+    float feedrate_A = data_.feedrate * data_.ratio_A * data_.gear_A / 60.0;
+    float feedrate_B = data_.feedrate * data_.ratio_B * data_.gear_B / 60.0;
 
     dozators_[0]->set_feedrate(feedrate_A); 
     dozators_[1]->set_feedrate(feedrate_B); 
@@ -35,8 +35,8 @@ void MultiDozator::calculate_feedrate(float feedrate) {
 void MultiDozator::calculate_accel(float accel) {
     data_.accel = accel;
 
-    float accel_A = data_.accel * data_.ratio_A * data_.gear_A / 60;
-    float accel_B = data_.accel * data_.ratio_B * data_.gear_B / 60;
+    float accel_A = data_.accel * data_.ratio_A * data_.gear_A / 60.0;
+    float accel_B = data_.accel * data_.ratio_B * data_.gear_B / 60.0;
 
     dozators_[0]->set_accel(accel_A);   
     dozators_[1]->set_accel(accel_B);   
@@ -49,10 +49,10 @@ void MultiDozator::calculate_ratio(float ratio_A) {
 }
 
 void MultiDozator::calculate_gear(float gear_A, float gear_B) {
-    if (gear_A > 0) {
+    if (gear_A > 0.0) {
         data_.gear_A = gear_A;
     }
-    if (gear_B > 0) {
+    if (gear_B > 0.0) {
         data_.gear_B = gear_B;
     }
     calculate_all();  

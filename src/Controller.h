@@ -10,7 +10,6 @@
 class Controller {
 public:
     Controller();
-    //Controller(Serial* usb, Serial* rs485);
     ~Controller();
 
     void loop();
@@ -21,7 +20,7 @@ private:
     Serial*         last_port_;
     DigitalOut*     transmit_enable_;
 
-    //MultiDozator    dozators_;
+    MultiDozator    dozators_;
 
     void usb_event();
     void rs485_event();

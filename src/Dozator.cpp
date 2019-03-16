@@ -55,7 +55,7 @@ bool Dozator::stopped() { // inline
 
 #ifdef TEST   
     void Dozator::print(Serial* port) {            
-        port->printf("\r\nDozator 1:\r\n");
+        port->printf("\r\nDozator:\r\n");
         port->printf("volume_: %d\r\n", volume_);
         port->printf("feedrate_: %d\r\n", feedrate_);
         port->printf("accel_: %d\r\n", accel_);

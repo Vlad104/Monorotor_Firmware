@@ -1,6 +1,5 @@
 #include "Controller.h"
 
-//Controller::Controller(Serial* usb, Serial* rs485) : usb_(usb), rs485_(rs485), last_port_(usb) {
 Controller::Controller() {
     usb_ = new Serial(USB_TX, USB_RX);
     rs485_ = new Serial(UART_TX, UART_RX);
@@ -56,8 +55,8 @@ void Controller::read_params(Serial* port) {
     char params_type = port->getc();
     char temp = port->getc();
 
-    char buffer_1[STR_SIZE];
-    char buffer_2[STR_SIZE];
+    char buffer_1[STR_SIZE+1];
+    char buffer_2[STR_SIZE+1];
 
     int size = 0;
     while (temp != '*' && size < STR_SIZE) {
@@ -66,14 +65,27 @@ void Controller::read_params(Serial* port) {
         size++;
     }
 
-    int ofset = STR_SIZE - size;
-    for (int i = 0; i < ofset; i++) {
-        buffer_2[i] = '0';
+    for (int i = size; i < STR_SIZE; i++) {
+        buffer_1[i] = '0';        
     }
 
-    for (int i = 0; i < size; i++) {
+    int start = 0;
+    if (buffer_1[0] == '-') {
+        buffer_2[0] = '-';
+        start = 1;
+    }
+
+    int ofset = STR_SIZE - size;
+    for (int i = 0; i < ofset; i++) {
+        buffer_2[i + start] = '0';
+    }
+
+    for (int i = start; i < size; i++) {
         buffer_2[ofset + i] = buffer_1[i];
     }
+
+    buffer_1[STR_SIZE] = '\0';
+    buffer_2[STR_SIZE] = '\0';
 
     #ifdef TEST
         usb_->printf("command: %c: %s\r\n", params_type, buffer_1);
@@ -86,26 +98,26 @@ void Controller::read_params(Serial* port) {
 void Controller::make_command(char command) {
     #ifdef TEST
         usb_->printf("command: %c\r\n", command);
-        //dozators_.print(usb_);
+        dozators_.print(usb_);
     #endif
     switch (command) {
         case '0':
             #ifdef TEST
                 usb_->printf("stop\r\n");
             #endif
-            //dozators_.stop();
+            dozators_.stop();
             break;
         case '1':
             #ifdef TEST
                 usb_->printf("start\r\n");
             #endif
-            //dozators_.start();
+            dozators_.start();
             break;
         case '2':
             #ifdef TEST
                 usb_->printf("continues\r\n");
             #endif
-            //dozators_.continues_start();            
+            dozators_.continues_start();            
             break;
         default:
             break;
@@ -120,25 +132,25 @@ void Controller::make_params(char params_type, const char str_buffer[STR_SIZE]) 
     #endif
     switch (params_type) {
         case 'D':     
-            //dozators_.set_dozator(str_buffer[0]);
+            dozators_.set_dozator(str_buffer[0]);
             break;
         case 'V':     
-            //dozators_.calculate_volume(value);
+            dozators_.calculate_volume(value);
             break;
         case 'F':
-            //dozators_.calculate_feedrate(value);
+            dozators_.calculate_feedrate(value);
             break;
         case 'A':
-            //dozators_.calculate_accel(value);
+            dozators_.calculate_accel(value);
             break;
         case 'a':
-            //dozators_.calculate_gear(value, -1);
+            dozators_.calculate_gear(value, -1);
             break;
         case 'b':
-            //dozators_.calculate_gear(-1, value);
+            dozators_.calculate_gear(-1, value);
             break;
         case 'r':
-            //dozators_.calculate_ratio(value);
+            dozators_.calculate_ratio(value);
             break;
         default:
             break;
@@ -153,7 +165,7 @@ float Controller::str_to_float(const char str_buffer[STR_SIZE]) {
 void Controller::loop() {
     bool was_stopped = false;
     while (1) {
-        //dozators_.run(was_stopped);
+        dozators_.run(was_stopped);
 
         if (was_stopped) {
             was_stopped = false;

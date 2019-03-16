@@ -27,17 +27,6 @@ public:
     void stop();
     void continues_start();
     void run(bool& was_stopped);
-    /*
-    void run(bool& was_stopped) {
-        dozators_[0]->run();
-        dozators_[1]->run();
-        
-        if (is_run_ && dozators_[0]->stopped() && dozators_[1]->stopped()) {
-            is_run_ = false;
-            was_stopped = true;
-        }
-    }
-    */
 
     #ifdef TEST   
         void print(Serial* port);
