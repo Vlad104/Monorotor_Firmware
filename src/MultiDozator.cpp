@@ -1,15 +1,14 @@
 #include "MultiDozator.h"
 
-MultiDozator::MultiDozator()
-{
-    dozators_[0] = new Dozator(STEP_A, DIR_A);
-    dozators_[1] = new Dozator(STEP_B, DIR_B);
+MultiDozator::MultiDozator() {
     is_run_ = false;
 }
 
-MultiDozator::~MultiDozator() {
-    delete dozators_[0];
-    delete dozators_[1];
+MultiDozator::~MultiDozator() {}
+
+void MultiDozator::activate_dozators(Dozator* A, Dozator* B) {     
+    dozator_A_ = A;    
+    dozator_B_ = B;
 }
 
 void MultiDozator::calculate_volume(float volume) {
@@ -18,8 +17,8 @@ void MultiDozator::calculate_volume(float volume) {
     float volume_A = data_.volume * data_.ratio_A * data_.gear_A;
     float volume_B = data_.volume * data_.ratio_B * data_.gear_B;
 
-    dozators_[0]->set_volume(volume_A); 
-    dozators_[1]->set_volume(volume_B); 
+    dozator_A_->set_volume(volume_A); 
+    dozator_B_->set_volume(volume_B); 
 }
 
 void MultiDozator::calculate_feedrate(float feedrate) {
@@ -28,8 +27,8 @@ void MultiDozator::calculate_feedrate(float feedrate) {
     float feedrate_A = data_.feedrate * data_.ratio_A * data_.gear_A / 60.0;
     float feedrate_B = data_.feedrate * data_.ratio_B * data_.gear_B / 60.0;
 
-    dozators_[0]->set_feedrate(feedrate_A); 
-    dozators_[1]->set_feedrate(feedrate_B); 
+    dozator_A_->set_feedrate(feedrate_A); 
+    dozator_B_->set_feedrate(feedrate_B); 
 }
 
 void MultiDozator::calculate_accel(float accel) {
@@ -38,8 +37,8 @@ void MultiDozator::calculate_accel(float accel) {
     float accel_A = data_.accel * data_.ratio_A * data_.gear_A / 60.0;
     float accel_B = data_.accel * data_.ratio_B * data_.gear_B / 60.0;
 
-    dozators_[0]->set_accel(accel_A);   
-    dozators_[1]->set_accel(accel_B);   
+    dozator_A_->set_accel(accel_A);   
+    dozator_B_->set_accel(accel_B);   
 }
 
 void MultiDozator::calculate_ratio(float ratio_A) {
@@ -71,32 +70,32 @@ void MultiDozator::set_dozator(char dozator) {
 void MultiDozator::start() {
     is_run_ = true;
     if (data_.dozator == '2') {
-        dozators_[0]->start_movement();
-        dozators_[1]->start_movement();
+        dozator_A_->start_movement();
+        dozator_B_->start_movement();
     } else if (data_.dozator == '0') {        
-        dozators_[0]->start_movement();
+        dozator_A_->start_movement();
     } else if (data_.dozator == '1') {      
-        dozators_[1]->start_movement();        
+        dozator_B_->start_movement();        
     } else {
         stop();
     }
 }
 
 void MultiDozator::stop() {
-    dozators_[0]->stop_movement();
-    dozators_[1]->stop_movement();
+    dozator_A_->stop_movement();
+    dozator_B_->stop_movement();
     is_run_ = true;
 }
 
 void MultiDozator::continues_start() {
     is_run_ = true;
     if (data_.dozator == '2') {
-        dozators_[0]->continues_movement();
-        dozators_[1]->continues_movement();
+        dozator_A_->continues_movement();
+        dozator_B_->continues_movement();
     } else if (data_.dozator == '0') {        
-        dozators_[0]->continues_movement();
+        dozator_A_->continues_movement();
     } else if (data_.dozator == '1') {      
-        dozators_[1]->continues_movement();        
+        dozator_B_->continues_movement();        
     } else {
         stop();
     }
@@ -104,10 +103,11 @@ void MultiDozator::continues_start() {
 
 
 void MultiDozator::run(bool& was_stopped) {
-    dozators_[0]->run();
-    dozators_[1]->run();
+    dozator_A_->run();
+    dozator_B_->run();
 
-    if (is_run_ && dozators_[0]->stopped() && dozators_[1]->stopped()) {
+    if (is_run_ && dozator_A_->stopped() && dozator_B_->stopped()) {
+    //if (is_run_) {
         is_run_ = false;
         was_stopped = true;
     }
@@ -125,7 +125,7 @@ void MultiDozator::run(bool& was_stopped) {
         port->printf("data_.ratio_A: %f\r\n", data_.ratio_A);
         port->printf("data_.ratio_B: %f\r\n", data_.ratio_B);
 
-        dozators_[0]->print(port);
-        dozators_[1]->print(port);
+        dozator_A_->print(port);
+        dozator_B_->print(port);
     }
 #endif

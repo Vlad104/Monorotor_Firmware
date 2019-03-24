@@ -25,6 +25,10 @@ Controller::~Controller() {
     delete transmit_enable_;
 }
 
+void Controller::start_control(Dozator* A, Dozator* B) {
+    dozators_.activate_dozators(A, B);
+}
+
 void Controller::rs485_event() {
     serial_event(rs485_);
 }

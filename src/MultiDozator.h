@@ -3,7 +3,6 @@
 
 #include "params.h"
 #include "Dozator.h"
-#include "DataModel.h"
 
 #ifdef TEST   
     #include "mbed.h"
@@ -13,6 +12,8 @@ class MultiDozator {
 public:
     MultiDozator();
     ~MultiDozator();
+
+    void activate_dozators(Dozator* A, Dozator* B);
 
     void calculate_volume(float volume);
     void calculate_feedrate(float feedrate);
@@ -33,8 +34,29 @@ public:
     #endif
 
 private:
+    struct DataModel {
+        DataModel() :
+            dozator('2'),
+            volume(0),
+            feedrate(0),
+            accel(0),
+            gear_A(1),
+            gear_B(1),
+            ratio_A(0.5),
+            ratio_B(0.5)
+        {}
+        char    dozator;
+        float   volume;     // ul
+        float   feedrate;   // ul/min
+        float   accel;      // ul/min*sec
+        float   gear_A;     // ul to impulses
+        float   gear_B;     // ul to impulses
+        float   ratio_A;    // ratio A to all
+        float   ratio_B;    // ratio A to all
+    };
     DataModel   data_;
-    Dozator*    dozators_[2];
+    Dozator*    dozator_A_;
+    Dozator*    dozator_B_;
     bool        is_run_;
 };
 

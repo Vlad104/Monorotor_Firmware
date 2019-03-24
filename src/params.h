@@ -1,7 +1,7 @@
 #ifndef PARAMS_H
 #define PARAMS_H
 
-#define TEST
+//#define TEST
 
 // PINS 
 #define STEP_A  PC_0
@@ -28,5 +28,6 @@
 // STEPPER
 #define MOTOR_MAX_SPEED  50000
 #define PULSE_WIDTH      10
+#define INFINITE 		 100000000
 
 #endif // PARAMS_H

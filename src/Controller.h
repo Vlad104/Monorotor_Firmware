@@ -5,6 +5,7 @@
 #include <cstdlib>
 
 #include "params.h"
+#include "Dozator.h"
 #include "MultiDozator.h"
 
 class Controller {
@@ -12,6 +13,7 @@ public:
     Controller();
     ~Controller();
 
+	void start_control(Dozator* A, Dozator* B);
     void loop();
 
 private:
