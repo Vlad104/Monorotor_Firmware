@@ -18,7 +18,7 @@ public:
     void stop_movement();
     void continues_movement();
 
-    bool stopped();
+    // bool stopped();
 
     #ifdef TEST
         void print(Serial* port);

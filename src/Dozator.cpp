@@ -1,7 +1,8 @@
 #include "Dozator.h"
 
 Dozator::Dozator(PinName step_pin, PinName dir_pin) :
-    AccelStepper(1, step_pin, dir_pin),
+    // AccelStepper(1, step_pin, dir_pin),
+    AccelStepper(step_pin, dir_pin),
     volume_(0), feedrate_(0), accel_(0)
 {
     setMinPulseWidth(PULSE_WIDTH);
@@ -11,15 +12,15 @@ Dozator::Dozator(PinName step_pin, PinName dir_pin) :
 }
 
 void Dozator::set_volume(float volume) {
-    volume_ = ((int32_t) volume) + 1;     // + 1 is rounds
+    volume_ = ((int32_t) volume) + 1;
 }
 
 void Dozator::set_feedrate(float feedrate) {
-    feedrate_ = ((uint32_t) feedrate) + 1;   // + 1 is rounds
+    feedrate_ = ((uint32_t) feedrate) + 1;
 }
 
 void Dozator::set_accel(float accel) {
-    accel_ = ((uint32_t) accel) + 1;      // + 1 is rounds
+    accel_ = ((uint32_t) accel) + 1;
 }
 
 void Dozator::start_movement() {
@@ -41,9 +42,9 @@ void Dozator::continues_movement() {
     setMaxSpeed(feedrate_);   
 }
 
-bool Dozator::stopped() { // inline
-    return distanceToGo() == 0;
-}
+// bool Dozator::stopped() { // inline
+//     return distanceToGo() == 0;
+// }
 
 #ifdef TEST   
     void Dozator::print(Serial* port) {            

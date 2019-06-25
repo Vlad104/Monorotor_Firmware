@@ -27,7 +27,14 @@ public:
     void start();
     void stop();
     void continues_start();
-    void run(bool& was_stopped);
+
+    // inline func
+    void run(bool& was_stopped)  {
+    if (is_run_ && dozator_A_->run() && dozator_B_->run()) {
+        is_run_ = false;
+        was_stopped = true;
+    }
+}
 
     #ifdef TEST   
         void print(Serial* port);

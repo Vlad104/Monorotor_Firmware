@@ -69,15 +69,19 @@ void MultiDozator::set_dozator(char dozator) {
 
 void MultiDozator::start() {
     is_run_ = true;
-    if (data_.dozator == '2') {
-        dozator_A_->start_movement();
-        dozator_B_->start_movement();
-    } else if (data_.dozator == '0') {        
-        dozator_A_->start_movement();
-    } else if (data_.dozator == '1') {      
-        dozator_B_->start_movement();        
-    } else {
-        stop();
+    switch (data_.dozator) {
+        case '2':
+            dozator_A_->start_movement();
+            dozator_B_->start_movement();
+            break;
+        case '0':
+            dozator_A_->start_movement();
+            break;
+        case '1':
+            dozator_B_->start_movement();
+            break;
+        default:
+            stop();
     }
 }
 
@@ -89,29 +93,28 @@ void MultiDozator::stop() {
 
 void MultiDozator::continues_start() {
     is_run_ = true;
-    if (data_.dozator == '2') {
-        dozator_A_->continues_movement();
-        dozator_B_->continues_movement();
-    } else if (data_.dozator == '0') {        
-        dozator_A_->continues_movement();
-    } else if (data_.dozator == '1') {      
-        dozator_B_->continues_movement();        
-    } else {
-        stop();
+    switch (data_.dozator) {
+        case '2':
+            dozator_A_->continues_movement();
+            dozator_B_->continues_movement();
+            break;
+        case '0':
+            dozator_A_->continues_movement();
+            break;
+        case '1':
+            dozator_B_->continues_movement();
+            break;
+        default:
+            stop();
     }
 }
 
-
-void MultiDozator::run(bool& was_stopped) {
-    dozator_A_->run();
-    dozator_B_->run();
-
-    if (is_run_ && dozator_A_->stopped() && dozator_B_->stopped()) {
-    //if (is_run_) {
-        is_run_ = false;
-        was_stopped = true;
-    }
-}
+// void MultiDozator::run(bool& was_stopped) {
+//     if (is_run_ && dozator_A_->run() && dozator_B_->run()) {
+//         is_run_ = false;
+//         was_stopped = true;
+//     }
+// }
 
 #ifdef TEST   
     void MultiDozator::print(Serial* port) {            
