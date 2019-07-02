@@ -16,7 +16,10 @@ public:
     void start_control(Dozator* A, Dozator* B);
     void loop();
 
+#ifndef TESTS
 private:
+#endif
+
     Serial*         usb_; 
     Serial*         rs485_;
     Serial*         remote_;
@@ -41,18 +44,22 @@ private:
     void read_command(Serial* port);
     void read_params(Serial* port);
     void make_command(char command);
-    void make_params(char message_type, const char str_buffer[STR_SIZE]);
-    float str_to_float(const char str_buffer[STR_SIZE]);
+    void make_params(char message_type, const char* str_buffer);
+    float str_to_float(const char* str_buffer);
     void send_answer(Serial* port, char answer);
 
     void single_loop(bool& was_stopped);
 
     void pedal_rise();
     void pedal_fall();
-    void alert_rise_A();
     void alert_fall_A();
-    void alert_rise_B();
     void alert_fall_B();
+    
+    #ifdef DEBUG
+        Timer t_test;
+        long ms1;
+        long ms2;
+    #endif
 };
 
 #endif // CONTROLLER_H

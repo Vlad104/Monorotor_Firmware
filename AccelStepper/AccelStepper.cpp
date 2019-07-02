@@ -30,17 +30,8 @@ bool AccelStepper::runSpeed()
     // Gymnastics to detect wrapping of either the nextStepTime and/or the current time
     if (((nextStepTime >= _lastStepTime) && ((time >= nextStepTime) || (time < _lastStepTime))) || ((nextStepTime < _lastStepTime) && ((time >= nextStepTime) && (time < _lastStepTime))))
     {
-        if (_direction == DIRECTION_CW)
-        {
-            // Clockwise
-            _currentPos += 1;
-        }
-        else
-        {
-            // Anticlockwise
-            _currentPos -= 1;
-        }
-        step(_currentPos);
+        _currentPos = (_direction == DIRECTION_CW) ? _currentPos + 1 : _currentPos - 1;
+        step();
 
         _lastStepTime = time;
         return true;
@@ -51,10 +42,10 @@ bool AccelStepper::runSpeed()
     }
 }
 
-long AccelStepper::distanceToGo()
-{
-    return _targetPos - _currentPos;
-}
+// long AccelStepper::distanceToGo()
+// {
+//     return _targetPos - _currentPos;
+// }
 
 // bool AccelStepper::distanceIsNull() {
 //     return _targetPos - _currentPos == 0;
@@ -257,7 +248,7 @@ void AccelStepper::setOutputPins(uint8_t mask)
 // 1 pin step function (ie for stepper drivers)
 // This is passed the current step number (0 to 7)
 // Subclasses can override
-void AccelStepper::step(long step)
+void AccelStepper::step()
 {
     // _pin[0] is step, _pin[1] is direction
     setOutputPins(_direction ? 0b10 : 0b00); // Set direction first else get rogue pulses

@@ -11,23 +11,26 @@ public:
     ~Dozator() {};
 
     void set_volume(float volume);
+    void set_reverse(float reverse);
     void set_feedrate(float feedrate);
     void set_accel(float accel);
 
     void start_movement();
+    void start_reverse();
     void stop_movement();
     void continues_movement();
 
-    // bool stopped();
-
-    #ifdef TEST
+    #ifdef DEBUG
         void print(Serial* port);
     #endif
 
+#ifndef TESTS
 private:
-    int32_t     volume_;    // imp
-    uint32_t    feedrate_;  // imp/sec
-    uint32_t    accel_;     // imp/sec^2
+#endif
+    long    volume_;    // imp
+    long    reverse_;   // imp
+    float   feedrate_;  // imp/sec
+    float   accel_;     // imp/sec^2
 };
 
 #endif // Dozator
